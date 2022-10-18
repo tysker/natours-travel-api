@@ -1,0 +1,39 @@
+# get all tours
+GET localhost:3000/api/v1/tours
+Accept: application/json
+
+###
+
+# get tour by id
+GET localhost:3000/api/v1/tours/100
+Accept: application/json
+
+###
+
+# post new tour
+POST localhost:3000/api/v1/tours
+content-type: application/json
+
+{
+  "name": "Test Tour 2000",
+  "duration": 5,
+  "difficulty": "easy",
+  "price": 25000
+}
+
+###
+
+# patch tour
+PATCH localhost:3000/api/v1/tours/1
+Content-type: application/json
+
+{
+  "duration": 8
+}
+
+###
+
+# delete tour
+DELETE localhost:3000/api/v1/tours/1
+
+###
