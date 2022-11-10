@@ -4,9 +4,9 @@ exports.getAllTours = async (req, res) => {
   try {
     // Build query
     // 1a) Filtering
-    const queryObj = {...req.query}; // Making a hard copy of the req.query
+    const queryObj = { ...req.query }; // Making a hard copy of the req.query
     const excludedFields = ['page', 'sort', 'limit', 'fields']; // Query params that should be excluded in the queryObject
-    excludedFields.forEach(el => delete  queryObj[el]); // delete object properties
+    excludedFields.forEach(el => delete queryObj[el]); // delete object properties
 
     // 1b) Advanced filtering
     let queryStr = JSON.stringify(queryObj);
@@ -17,18 +17,28 @@ exports.getAllTours = async (req, res) => {
     let query = Tour.find(JSON.parse(queryStr));
 
     // 2) Sorting
-    if(req.query.sort){
+    if (req.query.sort) {
       // localhost:3000/api/v1/tours?sort=-price,-ratingsAverage,duration
       const sortBy = req.query.sort.replace(/,/g, ' ');
-      query = query.sort(sortBy)
+      query = query.sort(sortBy);
     } else {
       query.sort('-createdAt');
     }
 
-    // 3) Execute query
+    // 3) Field Limiting (also called projecting)
+    if (req.query.fields) {
+    // localhost:3000/api/v1/tours?fields=name,duration
+      const fields = req.query.fields.replace(/,/g, ' ');
+      query = query.select(fields)
+    } else {
+      // by default excluding fields
+      query = query.select('-__v')
+    }
+
+    // 5) Execute query
     const tours = await query;
 
-    // 4) Send response
+    // 6) Send response
     res.status(200).json({
       status: 'success',
       results: tours.length,
