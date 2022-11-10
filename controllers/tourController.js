@@ -2,7 +2,33 @@ const Tour = require('../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // Build query
+    // 1a) Filtering
+    const queryObj = {...req.query}; // Making a hard copy of the req.query
+    const excludedFields = ['page', 'sort', 'limit', 'fields']; // Query params that should be excluded in the queryObject
+    excludedFields.forEach(el => delete  queryObj[el]); // delete object properties
+
+    // 1b) Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    // FRA { difficulty: 'easy', duration: { 'lte': '4' } } TIL { difficulty: 'easy', duration: { '$lte': '4' } }
+    // gte = greater then equal, lte = lower then equal ....
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`); // https://mongoosejs.com/docs/api/query.html
+
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // 2) Sorting
+    if(req.query.sort){
+      // localhost:3000/api/v1/tours?sort=-price,-ratingsAverage,duration
+      const sortBy = req.query.sort.replace(/,/g, ' ');
+      query = query.sort(sortBy)
+    } else {
+      query.sort('-createdAt');
+    }
+
+    // 3) Execute query
+    const tours = await query;
+
+    // 4) Send response
     res.status(200).json({
       status: 'success',
       results: tours.length,

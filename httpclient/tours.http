@@ -1,11 +1,11 @@
 # get all tours
-GET localhost:3000/api/v1/tours
+GET localhost:3000/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=1500
 Accept: application/json
 
 ###
 
 # get tour by id
-GET localhost:3000/api/v1/tours/634eb44461dcfea095503498
+GET localhost:3000/api/v1/tours/634f05ae0ef44a39bb4544b1
 Accept: application/json
 
 ###
@@ -40,11 +40,11 @@ content-type: application/json
 ###
 
 # patch tour
-PATCH localhost:3000/api/v1/tours/634eb44461dcfea095503498
+PATCH localhost:3000/api/v1/tours/634f05ae0ef44a39bb4544b6
 Content-type: application/json
 
 {
-  "price": 600
+  "ratingsAverage": 4.9
 }
 
 ###
