@@ -35,6 +35,21 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v')
     }
 
+    // 4) Pagination
+    //https://codeburst.io/javascript-what-is-short-circuit-evaluation-ff22b2f5608c
+    const page = req.query.page * 1 || 1; // convert string to number and then set default to 1
+    // set a default of 10 results to limit bandwidth
+    const limit = req.query.limit * 1 || 10; // convert string to number and then set default to 10
+    const skip = (page -1) * limit;
+
+    // localhost:3000/api/v1/tours?page=2&limit=10 (1-10 on page 1 and 11-20 on page 2)
+    query = query.skip(skip).limit(limit);
+
+    if(req.query.page) {
+      const numTours = await Tour.countDocuments()
+      if(skip >= numTours) throw new Error('This page does not exist') // will be caught in the catch method below
+    }
+
     // 5) Execute query
     const tours = await query;
 
@@ -49,7 +64,7 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -65,7 +80,7 @@ exports.getTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -80,7 +95,7 @@ exports.createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -100,7 +115,7 @@ exports.updateTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
@@ -115,7 +130,7 @@ exports.deleteTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
