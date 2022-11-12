@@ -17,7 +17,6 @@ app.use(express.static(`${__dirname}/public`)); // To get static files like imag
 
 app.use((req, res, next) => { // Just for testing
   console.log('Hello from the middleware!');
-
   next();
 });
 
