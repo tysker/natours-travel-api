@@ -16,6 +16,8 @@ exports.getAllTours = async (req, res) => {
       .sort()
       .limitFields()
       .paginate();
+
+    //console.log(features.query);
     const tours = await features.query;
 
     // SEND RESPONSE
@@ -23,13 +25,13 @@ exports.getAllTours = async (req, res) => {
       status: 'success',
       results: tours.length,
       data: {
-        tours
-      }
+        tours,
+      },
     });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err
+      message: err,
     });
   }
 };
@@ -42,13 +44,13 @@ exports.getTour = async (req, res) => {
     res.status(200).json({
       status: 'success',
       data: {
-        tour
-      }
+        tour,
+      },
     });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err
+      message: err,
     });
   }
 };
@@ -63,13 +65,13 @@ exports.createTour = async (req, res) => {
     res.status(201).json({
       status: 'success',
       data: {
-        tour: newTour
-      }
+        tour: newTour,
+      },
     });
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err
+      message: err,
     });
   }
 };
@@ -78,19 +80,19 @@ exports.updateTour = async (req, res) => {
   try {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
 
     res.status(200).json({
       status: 'success',
       data: {
-        tour
-      }
+        tour,
+      },
     });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err
+      message: err,
     });
   }
 };
@@ -101,12 +103,91 @@ exports.deleteTour = async (req, res) => {
 
     res.status(204).json({
       status: 'success',
-      data: null
+      data: null,
     });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err
+      message: err,
     });
   }
 };
+
+// MongoDB Aggregation
+// https://www.mongodb.com/basics/aggregation
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          // _id: '$difficulty',
+          // _id: null,
+          // _id: '$ratingsAverage',
+          _id: { $toUpper: '$difficulty'},
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity'},
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 } // 1 for asc and -1 for desc
+      },
+      // {
+      //   $match: { _id: { $ne: 'EASY'}}
+      // }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: stats
+    });
+
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
+
+// FRA { difficulty: 'easy', duration: { 'lte': '4' } } TIL { difficulty: 'easy', duration: { '$lte': '4' } }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
