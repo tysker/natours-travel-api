@@ -126,9 +126,9 @@ exports.getTourStats = async (req, res) => {
           // _id: '$difficulty',
           // _id: null,
           // _id: '$ratingsAverage',
-          _id: { $toUpper: '$difficulty'},
+          _id: { $toUpper: '$difficulty' },
           numTours: { $sum: 1 },
-          numRatings: { $sum: '$ratingsQuantity'},
+          numRatings: { $sum: '$ratingsQuantity' },
           avgRating: { $avg: '$ratingsAverage' },
           avgPrice: { $avg: '$price' },
           minPrice: { $min: '$price' },
@@ -136,7 +136,7 @@ exports.getTourStats = async (req, res) => {
         },
       },
       {
-        $sort: { avgPrice: 1 } // 1 for asc and -1 for desc
+        $sort: { avgPrice: 1 }, // 1 for asc and -1 for desc
       },
       // {
       //   $match: { _id: { $ne: 'EASY'}}
@@ -145,7 +145,7 @@ exports.getTourStats = async (req, res) => {
 
     res.status(200).json({
       status: 'success',
-      data: stats
+      data: stats,
     });
 
   } catch (err) {
@@ -156,7 +156,52 @@ exports.getTourStats = async (req, res) => {
   }
 };
 
-// FRA { difficulty: 'easy', duration: { 'lte': '4' } } TIL { difficulty: 'easy', duration: { '$lte': '4' } }
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match:
+          {
+            startDates: {
+              $gte: new Date(`${year}-01-01`),
+              $lte: new Date(`${year}-12-31`),
+            },
+          },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numToursStarts: { $sum: 1 },
+          tours: { $push: '$name'}
+        }
+      },
+      {
+        $addFields: { month: '$_id'}
+      },
+      {
+        $project: { _id: 0}
+      },
+      {
+        $sort: { numToursStarts: -1}
+      }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: plan,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
 
 
 

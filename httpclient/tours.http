@@ -1,5 +1,23 @@
 # get all tours
-GET localhost:3000/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=1500
+GET localhost:3000/api/v1/tours
+Accept: application/json
+
+###
+
+# get /top-5-cheap
+GET localhost:3000/api/v1/tours/top-5-cheap
+Accept: application/json
+
+###
+
+# get /tour-stats
+GET localhost:3000/api/v1/tours/tour-stats
+Accept: application/json
+
+###
+
+# get /tour-plan
+GET localhost:3000/api/v1/tours/monthly-plan/2021
 Accept: application/json
 
 ###
