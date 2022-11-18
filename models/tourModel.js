@@ -83,6 +83,11 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+tourSchema.virtual('durationWeeks').get( function() {
+  return this.duration / 7;
+})
+
+
 // With a model name, it is convention to write them with first letter uppercase
 const Tour = mongoose.model('Tour', tourSchema);
 
