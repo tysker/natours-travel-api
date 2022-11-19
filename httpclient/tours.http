@@ -33,7 +33,7 @@ POST localhost:3000/api/v1/tours
 content-type: application/json
 
 {
-  "name": "The Forest Hiker",
+  "name": "this is a test 2",
   "duration": 5,
   "maxGroupSize": 25,
   "difficulty": "easy",

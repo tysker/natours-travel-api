@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -87,6 +88,22 @@ tourSchema.virtual('durationWeeks').get( function() {
   return this.duration / 7;
 })
 
+// DOCUMENT MIDDLEWARE. runs before .save() and .create() ( not with insertMany() )
+tourSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, {lower: true})
+  next();
+})
+
+tourSchema.pre('save', function(next) {
+  console.log("Will save document.....");
+  next();
+})
+
+// DOCUMENT MIDDLEWARE. runs after .save() and .create()
+tourSchema.post('save', function(doc, next) {
+  console.log(doc);
+  next();
+})
 
 // With a model name, it is convention to write them with first letter uppercase
 const Tour = mongoose.model('Tour', tourSchema);
