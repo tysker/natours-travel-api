@@ -23,7 +23,7 @@ Accept: application/json
 ###
 
 # get tour by id
-GET localhost:3000/api/v1/tours/634f05ae0ef44a39bb4544b1
+GET localhost:3000/api/v1/tours/6378902d9d10686379eb5d8f
 Accept: application/json
 
 ###
@@ -33,26 +33,27 @@ POST localhost:3000/api/v1/tours
 content-type: application/json
 
 {
-  "name": "this is a test 2",
-  "duration": 5,
-  "maxGroupSize": 25,
+  "name": "This is  a super secret tour 2",
+  "duration": 3,
+  "maxGroupSize": 12,
   "difficulty": "easy",
   "ratingsAverage": 4.7,
-  "ratingsQuantity": 37,
-  "price": 397,
-  "summary": "Breathtaking hike through the Canadian Banff National Park",
-  "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\nLorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  "imageCover": "tour-1-cover.jpg",
+  "ratingsQuantity": 7,
+  "price": 1497,
+  "summary": "Enjoy the Northern Lights in one of the best places in the world",
+  "description": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum!\nDolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur, exercitation ullamco laboris nisi ut aliquip. Lorem ipsum dolor sit amet, consectetur adipisicing elit!",
+  "imageCover": "tour-9-cover.jpg",
   "images": [
-    "tour-1-1.jpg",
-    "tour-1-2.jpg",
-    "tour-1-3.jpg"
+    "tour-9-1.jpg",
+    "tour-9-2.jpg",
+    "tour-9-3.jpg"
   ],
   "startDates": [
-    "2021-04-25,10:00",
-    "2021-07-20,10:00",
-    "2021-10-05,10:00"
-  ]
+    "2021-12-16T10:00:00.000Z",
+    "2022-01-16T10:00:00.000Z",
+    "2022-12-12T10:00:00.000Z"
+  ],
+  "secretTour": true
 }
 
 ###

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -10,7 +11,12 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
       minlength: [10, 'A tour name must have more or equal then 10 characters'],
-      // Validate: [validator.isAlpha, 'Tour name must only contain characters']
+      // validate: {
+      //   validator: function(val) {
+      //     return validator.isAlpha( val, 'en-US', { ignore: ' '})
+      //   },
+      //   message: 'Name should only contain characters'
+      // }
     },
     slug: String,
     duration: {
@@ -99,9 +105,32 @@ tourSchema.pre('save', function(next) {
   next();
 })
 
-// DOCUMENT MIDDLEWARE. runs after .save() and .create()
+// DOCUMENT MIDDLEWARE.
+// runs after .save() and .create()
 tourSchema.post('save', function(doc, next) {
-  console.log(doc);
+  console.log("DOCUMENT MIDDLEWARE POST!");
+  next();
+})
+
+// QUERY MIDDLEWARE
+// points not to the current document, but to the current query
+// reg ex used for find... (find, finOne, findAll...)
+tourSchema.pre(/^find/, function(  next) {
+  this.find({secretTour: {$ne: true}})
+  // to verify how long a query took. see below for second Date property
+  this.start = Date.now();
+  next();
+})
+
+tourSchema.post(/^find/, function(  docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  next();
+})
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function(next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
+  console.log(this.pipeline());
   next();
 })
 
