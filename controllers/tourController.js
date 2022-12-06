@@ -11,9 +11,9 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 exports.getAllTours = catchAsync(async (req, res, next) => {
-  // EXECUTE QUERY
 
-  console.log(process.env.NODE_ENV);
+  // EXECUTE QUERY
+  console.log("Hallo", process.env.NODE_ENV);
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
