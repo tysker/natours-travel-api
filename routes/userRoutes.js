@@ -1,7 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
-const { protect } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -15,7 +14,7 @@ const {
   deleteMyInfo
 } = userController;
 
-const { signup, login, forgotPassword, resetPassword, updatedPassword } = authController;
+const { protect, restrictTo, signup, login, forgotPassword, resetPassword, updatedPassword } = authController;
 
 router.post('/signup', signup);
 router.post('/login', login);
