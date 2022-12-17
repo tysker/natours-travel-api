@@ -13,6 +13,7 @@ const DB = process.env.DATABASE_DEV.replace(
 );
 
 mongoose
+  .set('strictQuery', false)
   .connect(DB)
   .then(() => {console.log('DB connection successful!');});
 

@@ -16,7 +16,7 @@ const tourSchema = new mongoose.Schema(
       //     return validator.isAlpha( val, 'en-US', { ignore: ' '})
       //   },
       //   message: 'Name should only contain characters'
-      // }
+      // },
     },
     slug: String,
     duration: {
@@ -52,7 +52,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (val) {
+        validator: function(val) {
           // This only points to current doc on NEW document creation
           return val < this.price;
         },
@@ -83,6 +83,36 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -90,49 +120,70 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-tourSchema.virtual('durationWeeks').get( function() {
+tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
+});
+
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
 })
 
 // DOCUMENT MIDDLEWARE. runs before .save() and .create() ( not with insertMany() )
 tourSchema.pre('save', function(next) {
-  this.slug = slugify(this.name, {lower: true})
+  this.slug = slugify(this.name, { lower: true });
   next();
-})
+});
 
 tourSchema.pre('save', function(next) {
-  console.log("Will save document.....");
+  console.log('Will save document.....');
   next();
-})
+});
 
 // DOCUMENT MIDDLEWARE.
 // runs after .save() and .create()
 tourSchema.post('save', function(doc, next) {
-  console.log("DOCUMENT MIDDLEWARE POST!");
+  console.log('DOCUMENT MIDDLEWARE POST!');
   next();
-})
+});
+
+// Embedded User
+// tourSchema.pre('save', async function(next) {
+//   const guidesPromises = this.guides.map( async id => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// })
 
 // QUERY MIDDLEWARE
 // points not to the current document, but to the current query
 // reg ex used for find... (find, finOne, findAll...)
-tourSchema.pre(/^find/, function(  next) {
-  this.find({secretTour: {$ne: true}})
+tourSchema.pre(/^find/, function(next) {
+  this.find({ secretTour: { $ne: true } });
   // to verify how long a query took. see below for second Date property
   this.start = Date.now();
   next();
-})
+});
 
-tourSchema.post(/^find/, function(  docs, next) {
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
+tourSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
   next();
-})
+});
 
 // AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function(next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } })
-  console.log(this.pipeline());
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
-})
+});
 
 // With a model name, it is convention to write them with first letter uppercase
 const Tour = mongoose.model('Tour', tourSchema);

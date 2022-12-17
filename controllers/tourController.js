@@ -13,7 +13,6 @@ exports.aliasTopTours = (req, res, next) => {
 exports.getAllTours = catchAsync(async (req, res, next) => {
 
   // EXECUTE QUERY
-  console.log("Hallo", process.env.NODE_ENV);
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
@@ -34,7 +33,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
+
   // Tour.findOne({ _id: req.params.id })
 
   if (!tour) {
