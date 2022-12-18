@@ -11,10 +11,17 @@ const {
   updateUser,
   deleteUser,
   updateMyInfo,
-  deleteMyInfo
+  deleteMyInfo,
 } = userController;
 
-const { protect, restrictTo, signup, login, forgotPassword, resetPassword, updatedPassword } = authController;
+const {
+  protect,
+  signup,
+  login,
+  forgotPassword,
+  resetPassword,
+  updatedPassword,
+} = authController;
 
 router.post('/signup', signup);
 router.post('/login', login);

@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Limit request from the same IP
 const limiter = rateLimit({
-  max: 100, // should be higher or lower after demand of the application
+  max: 100, // Should be higher or lower after demand of the application
   windowMs: 60 * 60 * 1000,
   message: 'To many requests from this IP, please try again in an hour!',
 });
@@ -45,19 +45,22 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
-// prevent parameter solution
-app.use(hpp({
-  whitelist: [
-    'duration',
-    'ratingsQuantity',
-    'ratingsAverage',
-    'maxGroupSize',
-    'difficulty',
-    'price',
-  ],
-}));
+// Prevent parameter solution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
-app.use((req, res, next) => { // Set the request time
+app.use((req, res, next) => {
+  // Set the request time
   req.requestTime = new Date().toISOString();
   next();
 });
