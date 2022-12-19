@@ -22,19 +22,23 @@ const {
   forgotPassword,
   resetPassword,
   updatedPassword,
+  restrictTo,
 } = authController;
 
 router.post('/signup', signup);
 router.post('/login', login);
-
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
 
-router.patch('/updatedPassword', protect, updatedPassword);
+router.use(protect);
 
-router.get('/me', protect, getMe, getUser);
-router.patch('/updateMyInfo', protect, updateMyInfo);
-router.delete('/deleteMyInfo', protect, deleteMyInfo);
+router.patch('/updatedPassword', updatedPassword);
+
+router.get('/me', getMe, getUser);
+router.patch('/updateMyInfo', updateMyInfo);
+router.delete('/deleteMyInfo', deleteMyInfo);
+
+router.use(restrictTo('admin'));
 
 router.route('/').get(getAllUsers).post(createUser);
 
