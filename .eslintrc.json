@@ -16,6 +16,7 @@
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val|err" }],
     "capitalized-comments": ["error", "always"],
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "prefer-arrow-callback": "off"
   }
 }

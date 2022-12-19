@@ -11,11 +11,11 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, 'A tour name must have less or equal then 40 characters'],
       minlength: [10, 'A tour name must have more or equal then 10 characters'],
-      // validate: {
-      //   validator: function(val) {
-      //     return validator.isAlpha( val, 'en-US', { ignore: ' '})
+      // Validate: {
+      //   Validator: function(val) {
+      //     Return validator.isAlpha( val, 'en-US', { ignore: ' '})
       //   },
-      //   message: 'Name should only contain characters'
+      //   Message: 'Name should only contain characters'
       // },
     },
     slug: String,
@@ -52,7 +52,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function(val) {
+        validator: function (val) {
           // This only points to current doc on NEW document creation
           return val < this.price;
         },
@@ -120,7 +120,10 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-tourSchema.virtual('durationWeeks').get(function() {
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
+tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
@@ -128,45 +131,45 @@ tourSchema.virtual('durationWeeks').get(function() {
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
-  localField: '_id'
-})
+  localField: '_id',
+});
 
 // DOCUMENT MIDDLEWARE. runs before .save() and .create() ( not with insertMany() )
-tourSchema.pre('save', function(next) {
+tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-tourSchema.pre('save', function(next) {
+tourSchema.pre('save', function (next) {
   console.log('Will save document.....');
   next();
 });
 
 // DOCUMENT MIDDLEWARE.
-// runs after .save() and .create()
-tourSchema.post('save', function(doc, next) {
+// Runs after .save() and .create()
+tourSchema.post('save', function (doc, next) {
   console.log('DOCUMENT MIDDLEWARE POST!');
   next();
 });
 
 // Embedded User
-// tourSchema.pre('save', async function(next) {
-//   const guidesPromises = this.guides.map( async id => await User.findById(id));
-//   this.guides = await Promise.all(guidesPromises);
-//   next();
+// TourSchema.pre('save', async function(next) {
+//   Const guidesPromises = this.guides.map( async id => await User.findById(id));
+//   This.guides = await Promise.all(guidesPromises);
+//   Next();
 // })
 
 // QUERY MIDDLEWARE
-// points not to the current document, but to the current query
-// reg ex used for find... (find, finOne, findAll...)
-tourSchema.pre(/^find/, function(next) {
+// Points not to the current document, but to the current query
+// Reg ex used for find... (find, finOne, findAll...)
+tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
-  // to verify how long a query took. see below for second Date property
+  // To verify how long a query took. see below for second Date property
   this.start = Date.now();
   next();
 });
 
-tourSchema.pre(/^find/, function(next) {
+tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
     select: '-__v -passwordChangedAt',
@@ -174,13 +177,13 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
-tourSchema.post(/^find/, function(docs, next) {
+tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
   next();
 });
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function(next) {
+tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
