@@ -12,6 +12,7 @@ const {
   deleteUser,
   updateMyInfo,
   deleteMyInfo,
+  getMe,
 } = userController;
 
 const {
@@ -31,6 +32,7 @@ router.patch('/resetPassword/:token', resetPassword);
 
 router.patch('/updatedPassword', protect, updatedPassword);
 
+router.get('/me', protect, getMe, getUser);
 router.patch('/updateMyInfo', protect, updateMyInfo);
 router.delete('/deleteMyInfo', protect, deleteMyInfo);
 

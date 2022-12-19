@@ -6,8 +6,6 @@ exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const document = await Model.findByIdAndDelete(req.params.id);
 
-    if (Model === Model.Tour) console.log('Hallo from Tour');
-
     if (!document) {
       return next(
         new AppError(`No document found with ID ${req.params.id}`, 404),
