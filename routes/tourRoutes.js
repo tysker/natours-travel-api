@@ -14,11 +14,14 @@ const {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
+  getDistances,
 } = tourController;
 
 const { protect, restrictTo } = authController;
 
 router.use('/:tourId/reviews', reviewRouter);
+
 
 router
   .route('/')
@@ -38,5 +41,8 @@ router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 router
   .route('/monthly-plan/:year')
   .get(protect, restrictTo('admin', 'guide', 'lead-guide'), getMonthlyPlan);
+
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(getToursWithin);
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 module.exports = router;

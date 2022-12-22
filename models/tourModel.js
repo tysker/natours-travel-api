@@ -52,7 +52,7 @@ const tourSchema = new mongoose.Schema(
     priceDiscount: {
       type: Number,
       validate: {
-        validator: function (val) {
+        validator: function(val) {
           // This only points to current doc on NEW document creation
           return val < this.price;
         },
@@ -122,8 +122,9 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
-tourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
@@ -135,19 +136,19 @@ tourSchema.virtual('reviews', {
 });
 
 // DOCUMENT MIDDLEWARE. runs before .save() and .create() ( not with insertMany() )
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', function(next) {
   console.log('Will save document.....');
   next();
 });
 
 // DOCUMENT MIDDLEWARE.
 // Runs after .save() and .create()
-tourSchema.post('save', function (doc, next) {
+tourSchema.post('save', function(doc, next) {
   console.log('DOCUMENT MIDDLEWARE POST!');
   next();
 });
@@ -162,14 +163,14 @@ tourSchema.post('save', function (doc, next) {
 // QUERY MIDDLEWARE
 // Points not to the current document, but to the current query
 // Reg ex used for find... (find, finOne, findAll...)
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
   // To verify how long a query took. see below for second Date property
   this.start = Date.now();
   next();
 });
 
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'guides',
     select: '-__v -passwordChangedAt',
@@ -177,14 +178,18 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.post(/^find/, function (docs, next) {
+tourSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
   next();
 });
 
 // AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+tourSchema.pre('aggregate', function(next) {
+  // $geoNear needs to be the first argument
+  if (!this.pipeline().filter(el => el.$geoNear).length) {
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  }
+
   next();
 });
 
