@@ -14,11 +14,13 @@ exports.getAllTours = factory.getAll(Tour);
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 exports.createTour = factory.createOne(Tour);
+
 exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 
 // MongoDB Aggregation
 // https://www.mongodb.com/basics/aggregation
 exports.getTourStats = catchAsync(async (req, res, next) => {
+
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },

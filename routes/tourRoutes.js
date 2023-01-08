@@ -20,8 +20,10 @@ const {
 
 const { protect, restrictTo } = authController;
 
-router.use('/:tourId/reviews', reviewRouter);
+router.route('/tour-stats').get(getTourStats);
+router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/')
@@ -33,10 +35,6 @@ router
   .get(getTour)
   .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
-
-router.route('/tour-stats').get(getTourStats);
-
-router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 router
   .route('/monthly-plan/:year')
