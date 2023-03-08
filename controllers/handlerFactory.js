@@ -77,6 +77,7 @@ exports.getAll = (Model) =>
     let filter = {};
     if (req.params.tourId) filter = { tour: req.params.tourId };
 
+    // EXECUTE QUERY
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()

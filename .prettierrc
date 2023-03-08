@@ -3,5 +3,5 @@
   "trailingComma": "all",
   "arrowParens": "always",
   "semi": true,
-  "prettier.spaceBeforeFunctionParen": true
+  "prettier.spaceBeforeFunctionParen": "true"
 }
